@@ -6,7 +6,7 @@ SRCS = hazmat.c randombytes.c sss.c tweetnacl.c
 OBJS := ${SRCS:.c=.o}
 UNAME_S := $(shell uname -s)
 
-all: libsss.a
+all: libsss.a libsss.so
 
 libsss.a: randombytes/librandombytes.a $(OBJS)
     ifeq ($(UNAME_S),Linux)
@@ -15,6 +15,9 @@ libsss.a: randombytes/librandombytes.a $(OBJS)
     ifeq ($(UNAME_S),Darwin)
 		libtool -static -o libsss.a $^
     endif
+
+libsss.so: randombytes/librandombytes.a $(OBJS)
+	$(LINK.c) -shared $^ -o $@
 
 randombytes/librandombytes.a:
 	$(MAKE) -C randombytes librandombytes.a
